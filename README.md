@@ -306,4 +306,21 @@ export default App;
 ```
 low level of Link is actually an <a>, when click this tag,will not refresh page and  windows.history will change url+new path, then react will render mapped component by using Switch to loop all children component path to find mapped component.
 
+#React component event listener:
+on+Event
+when rendering button, will excute ()=>handleClick('jack'), and this will return a callback and be past as a parameter to this onclick, and envoked after user click.
+```jsx
+function App(){
+const handleClick= (name)=>{
+  console.log(name); //jack
+  return (e)=>{
+      console.log(e);// this e is passed by react
+  }
+}
+  return(
+    <button onClick={()=>handleClick('jack')}>click me</button>
+  )
+}
+```
+ 
 
