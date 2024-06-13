@@ -1,7 +1,7 @@
 # react-note
 react-revision
 
-babel:
+# babel:
 convert modern js to broswer compatible js
 1. convert es6->es5
 2. convert jsx->js
@@ -13,25 +13,27 @@ import/export->require('**')
 three most important packages for react: react, react-dom, babel
 script type: text/babel
 
-virtual dom and real dom:
+# virtual dom and real dom:
 all class or function component are virtual doms, and they are built in tree,
 this code is for rendering virtual doms into real doms.
 ```jsx
 ReactDOM.render(thisComponent, document.getElementById('root'))
 ```
-#DOM（Document Object Model）
+# DOM（Document Object Model）
 HTML is a kind of document, and each tag/element stands for a dom which contributes to the tree shaped document, and js could operate each dom, by runing the js script.
 dom is object which contains various of attributes, real doms has much more attributes than virtual dom,
 operate real dom is costly, cause it may cause reflow and must cause repaint, which will cause bad performance, cause cpu are working so frequantly.
 
-reflow: any changes such as change size, position, hidden some elements, query some attribute lsuch as offsetWidth.. will cause reflow,
+# reflow: 
+any changes such as change size, position, hidden some elements, query some attribute lsuch as offsetWidth.. will cause reflow,
 browser will recaculate layout. costly and time consuming.
-repaint: change color will cause broswer repaint.
+# repaint: 
+change color will cause broswer repaint.
 
 react virtual dom will decrease times for operating real doms by applying diff alg, 
 when components changes, react will generate a new virtual doms and compare with the old virtual doms, to get the modified dom (elememt, which is the unit of the alg), then render the diff real dom.
 
-#jsx syntax rules: 
+# jsx syntax rules: 
 1. no quotaion mark.
 2. use {} when element mixed with js expression
 3. className instead of class
@@ -133,9 +135,9 @@ class MyComponent extends React.Component {
 export default MyComponent;
 
 ```
-1. parent class component pass data to child component:
+# 1. parent class component pass data to child component:
 
-#ParentComponent.js：
+ParentComponent.js：
 ```jsx
 import React from 'react';
 import ChildComponent from './ChildComponent';
@@ -177,7 +179,7 @@ class ChildComponent extends React.Component {
 
 export default ChildComponent;
 ```
-2. child class component pass data to parent component:
+# 2. child class component pass data to parent component:
 ```jsx
 import React from 'react';
 import ChildComponent from './ChildComponent';
@@ -207,7 +209,7 @@ class ParentComponent extends React.Component {
 
 export default ParentComponent;
 ```
-3. context usage:
+# 3. context usage:
 ```jsx
 import React from 'react';
 
@@ -263,7 +265,7 @@ class ChildComponent extends React.Component {
 export default ChildComponent;
 ```
 
-#SPA/CSR(client side rendering)
+# SPA/CSR(client side rendering)
 SPA application only request once for html document, then apply AJAX mechanism, get data instead of whole page to render pages.
 
 advantages:
@@ -306,7 +308,7 @@ export default App;
 ```
 low level of Link is actually an "<a>", when click this tag,will not refresh page and  windows.history will change url+new path, then react will render mapped component by using Switch to loop all children component path to find mapped component.
 
-#React component event listener:
+# React component event listener:
 on+Event
 when rendering button, will excute ()=>handleClick('jack'), and this will return a callback and be past as a parameter to this onclick, and envoked after user click.
 ```jsx
@@ -322,9 +324,9 @@ const handleClick= (name)=>{
   )
 }
 ```
- #hooks
+ # hooks
 
- ##useState
+ # useState
  
 ```jsx
 import { useState } from 'react';
@@ -357,6 +359,15 @@ function App() {
       </p>
     </div>
   );
+}
+```
+
+```jsx
+function App() {
+  // pass callback，count = Date.now()
+  const [count, setCount] = useState(() => {
+    return Date.now();
+  });
 }
 ```
 for each component, react keep a Fiber to manage states, 
@@ -397,7 +408,7 @@ const MyComponent = () => {
 export default MyComponent;
 
 ```
-
+# useState source code simple version:
 ```jsx
 function someFunction(){
   let _index=0;
@@ -421,8 +432,8 @@ function someFunction(){
   }
 
   function render(){
-    React.dom.render(<App/>);
-    _index = 0;
+   _index = 0;
+    ReactDOM.render(<App />, document.getElementById('root'));
   }
 
   function useState(initialState){
@@ -437,40 +448,238 @@ function someFunction(){
   }
 }
 ```
-
+# useState manage array and obj
 ```jsx
-import React, { useState, useEffect } from 'react';
+//array
+//add
+import React, { useState } from 'react';
 
-const Counter = ({ start }) => {
-  let countState;
-  if (start) {
-    countState = useState(start);
-  }
+function App() {
+  const [items, setItems] = useState([]);
 
-  const [count, setCount] = countState || useState(0);
-
-  useEffect(() => {
-    document.title = `Count: ${count}`;
-  }, [count]);
+  const addItem = () => {
+    const newItem = { id: items.length, value: Math.random() };
+    setItems([...items, newItem]);
+  };
 
   return (
     <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={addItem}>Add Item</button>
+      <ul>
+        {items.map(item => (
+          <li key={item.id}>{item.value}</li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-export default Counter;
+export default App;
+
+
+//delete
+import React, { useState } from 'react';
+
+function App() {
+  const [items, setItems] = useState([{ id: 1, value: 'Item 1' }, { id: 2, value: 'Item 2' }]);
+
+  const deleteItem = (id) => {
+    const updatedItems = items.filter(item => item.id !== id);
+    setItems(updatedItems);
+  };
+
+  return (
+    <div>
+      {items.map(item => (
+        <div key={item.id}>
+          {item.value} <button onClick={() => deleteItem(item.id)}>Delete</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default App;
+
+
+//update
+import React, { useState } from 'react';
+
+function App() {
+  const [items, setItems] = useState([{ id: 1, value: 'Item 1' }, { id: 2, value: 'Item 2' }]);
+
+  const updateItem = (id, newValue) => {
+    const updatedItems = items.map(item =>
+      item.id === id ? { ...item, value: newValue } : item
+    );
+    setItems(updatedItems);
+  };
+
+  return (
+    <div>
+      {items.map(item => (
+        <div key={item.id}>
+          {item.value} <button onClick={() => updateItem(item.id, 'Updated Value')}>Update</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default App;
+
+//obj
+//update
+import React, { useState } from 'react';
+
+function App() {
+  const [user, setUser] = useState({ name: 'Alice', age: 25 });
+
+  const updateUserName = () => {
+    setUser(prevUser => ({ ...prevUser, name: 'Bob' }));
+  };
+
+  return (
+    <div>
+      <p>Name: {user.name}</p>
+      <p>Age: {user.age}</p>
+      <button onClick={updateUserName}>Update Name</button>
+    </div>
+  );
+}
+
+export default App;
+
+// add
+import React, { useState } from 'react';
+
+function App() {
+  const [user, setUser] = useState({ name: 'Alice', age: 25 });
+
+  const addUserEmail = () => {
+    setUser(prevUser => ({ ...prevUser, email: 'alice@example.com' }));
+  };
+
+  return (
+    <div>
+      <p>Name: {user.name}</p>
+      <p>Age: {user.age}</p>
+      {user.email && <p>Email: {user.email}</p>}
+      <button onClick={addUserEmail}>Add Email</button>
+    </div>
+  );
+}
+
+export default App;
+
 ```
 
+
+# react batching
+multi invoking of setState()
 
 ```jsx
-function App() {
-  // pass callback，count = Date.now()
-  const [count, setCount] = useState(() => {
-    return Date.now();
-  });
+// 直接使用变量
+function AppData() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+  };
+
+  return (
+    <div className="App">
+      <button onClick={handleClick}>click me, {count}</button>
+    </div>
+  );
 }
 ```
+```jsx
+// 使用callback中的变量
+function AppCallback() {
+  const [count, setCount] = useState(0);
 
+  const handleClick = () => {
+    setCount(count => count + 1);
+    setCount(count => count + 1);
+    setCount(count => count + 1);
+  };
+
+  return (
+    <div className="App">
+      <button onClick={handleClick}>click me, {count}</button>
+    </div>
+  );
+}
+```
+before:
+```jsx
+function App() {
+  const [count, setCount] = useState(0);
+
+  const getList = () => {
+    // console.log(count);
+    fetch('https://www.xiabingbao.com', {
+      method: 'POST',
+      body: JSON.stringify({ count }),
+    });
+  };
+
+  const handleClick = () => {
+    setCount(count + 1);
+    console.log(count);
+
+    // 本意是想用更新后的最新count来调用 getList()
+    getList();
+  };
+}
+```
+in one event handler function, react will only render one time, so the count will keep the current reender value
+only when use callback prevState=>prevState+1, this will use modified value as new value.
+
+after:
+```jsx
+// way 1
+const handleClick = () => {
+  const newCount = count + 1;
+  setCount(newCount);
+  getList(newCount);
+};
+// way 2
+function App() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    getList();
+  }, [count]);
+
+  const handleClick = () => {
+    setCount(count + 1);
+  };
+}
+```
+# function component excuting order:
+- Call all hooks (including `useState` and `useEffect`): Initialize state and define side effects.
+- Execute the main part of the component function: Define event handlers and return JSX to render the UI.
+- React updates the DOM: Render the UI based on the returned JSX.
+- Execute `useEffect` side effects: Run after the DOM has been updated.
+
+# some packages: lodash, classname, dayjs,
+
+# get dom from react: useRef
+```jsx
+function App(){
+  const inputRef = useRef(null);
+  const showDom = ()=>{
+    console.dir(inputRef.current);
+  }
+  return (
+    <div>
+      <input type="text" ref={inputRef}/>
+      <button onClick={showDom}>get dom</button>
+    </div>
+  )
+}
+```
