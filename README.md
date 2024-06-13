@@ -304,7 +304,7 @@ const App = () => (
 
 export default App;
 ```
-low level of Link is actually an <a>, when click this tag,will not refresh page and  windows.history will change url+new path, then react will render mapped component by using Switch to loop all children component path to find mapped component.
+low level of Link is actually an "<a>", when click this tag,will not refresh page and  windows.history will change url+new path, then react will render mapped component by using Switch to loop all children component path to find mapped component.
 
 #React component event listener:
 on+Event
@@ -322,5 +322,119 @@ const handleClick= (name)=>{
   )
 }
 ```
+ #hooks
+
+ ##useState
  
+```jsx
+import { useState } from 'react';
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [userInfo, setUserInfo] = useState({ name: 'wenzi', age: 24 });
+
+  const handleClickByVal = () => {
+    setCount(count + 1);
+  };
+  const handleClickByCallback = () => {
+    setCount(count => count + 1);
+  };
+  const handleUpdateUserInfo = () => {
+    setUserInfo({ ...userInfo, age: userInfo.age + 1 });
+  };
+
+  return (
+    <div className="App">
+      <p>{count}</p>
+      <p>
+        <button onClick={handleClickByVal}>add by val</button>
+      </p>
+      <p>
+        <button onClick={handleClickByCallback}>add by callback</button>
+      </p>
+      <p>
+        <button onClick={handleUpdateUserInfo}>update userInfo</button>
+      </p>
+    </div>
+  );
+}
+```
+for each component, react keep a Fiber to manage states, 
+
+
+```jsx
+function someFunction(){
+  let _index=0;
+  const _states = [],
+     _setStates = [];
+
+  function createState(initialState, index){
+    return states[index] !== undefined ? states[index]:initialState;
+  }
+
+  function createSetState(index){
+  
+    return function(newState){
+      if(typeof newState === 'function'){
+        states[index] = newState(states[index]);
+      }else{
+        states[index] = newState;
+      }
+      render();
+    }
+  }
+
+  function render(){
+    React.dom.render(<App/>);
+    _index = 0;
+  }
+
+  function useState(initialState){
+    _states[_index] = createState(initialState, _index);
+    if(!_setStates[_index]){
+      _setStates.push(createSetState(_index));
+    }
+    const _state = _states[_index];
+    const _setState = _setStates[_index];
+    _index++;
+    return [_state, _setState];
+  }
+}
+```
+
+```jsx
+import React, { useState, useEffect } from 'react';
+
+const Counter = ({ start }) => {
+  let countState;
+  if (start) {
+    countState = useState(start);
+  }
+
+  const [count, setCount] = countState || useState(0);
+
+  useEffect(() => {
+    document.title = `Count: ${count}`;
+  }, [count]);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+
+export default Counter;
+```
+
+
+```jsx
+function App() {
+  // pass callback，count = Date.now()
+  const [count, setCount] = useState(() => {
+    return Date.now();
+  });
+}
+```
 
