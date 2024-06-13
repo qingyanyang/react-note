@@ -208,7 +208,7 @@ class ParentComponent extends React.Component {
 export default ParentComponent;
 ```
 3. context usage:
-```
+```jsx
 import React from 'react';
 
 const MyContext = React.createContext();
@@ -216,7 +216,7 @@ const MyContext = React.createContext();
 export default MyContext;
 
 ```
-```
+```jsx
 import React from 'react';
 import ChildComponent from './ChildComponent';
 import MyContext from './MyContext';
@@ -243,7 +243,7 @@ class ParentComponent extends React.Component {
 
 export default ParentComponent;
 ```
-```
+```jsx
 import React from 'react';
 import MyContext from './MyContext';
 
@@ -263,6 +263,47 @@ class ChildComponent extends React.Component {
 export default ChildComponent;
 ```
 
+#SPA/CSR(client side rendering)
+SPA application only request once for html document, then apply AJAX mechanism, get data instead of whole page to render pages.
 
+advantages:
+1. no page refreshing.
+2. faster loading and bandwidth saving.
+3. user friendly.
+
+disadvantages:
+1. first rendering time longer than SSR. cuz need to download all js files.
+2. bad SEO. cuz empty html is caught at the beginning.
+
+SPA dynamic router:
+```jsx
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import Home from './components/Home';
+import About from './components/About';
+import Contact from './components/Contact';
+
+const App = () => (
+  <Router>
+    <div>
+      <nav>
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/about">About</Link></li>
+          <li><Link to="/contact">Contact</Link></li>
+        </ul>
+      </nav>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/about" component={About} />
+        <Route path="/contact" component={Contact} />
+      </Switch>
+    </div>
+  </Router>
+);
+
+export default App;
+```
+low level of Link is actually an <a>, when click this tag,will not refresh page and  windows.history will change url+new path, then react will render mapped component by using Switch to loop all children component path to find mapped component.
 
 
