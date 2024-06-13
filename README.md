@@ -360,7 +360,43 @@ function App() {
 }
 ```
 for each component, react keep a Fiber to manage states, 
+useState cannot be put into if(){} or any loops: 
 
+if: it will cause conditionally invoke different useState, and the new initialState will not cover the previous state at same index, they commonly use the same index, which will casue states lost.
+
+loop: the times for loop for every render may different, this will cause disorder.
+
+summery: useState should be invoked in order and the number of them should be keep the same as well.
+
+recon: put useState() at the top of function component, cause we use const insead of function, no floating, after defined then use it.
+
+```jsx
+import React, { useState, useEffect } from 'react';
+
+const MyComponent = () => {
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState('Hello');
+
+  useEffect(() => {
+    document.title = `Count: ${count}`;
+  }, [count]);
+
+  const increment = () => setCount(count + 1);
+  const updateText = (e) => setText(e.target.value);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>Increment</button>
+      <p>Text: {text}</p>
+      <input type="text" value={text} onChange={updateText} />
+    </div>
+  );
+};
+
+export default MyComponent;
+
+```
 
 ```jsx
 function someFunction(){
