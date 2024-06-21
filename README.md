@@ -683,4 +683,95 @@ function App(){
   )
 }
 ```
-# 
+# UseEffect usage
+
+```jsx
+function App() {
+    const [count,setCount] = useState(0);
+    // 组件挂载完成之后 或 组件数据更新完成之后 执行
+    useEffect(() => {
+        console.log('组件挂载完成之后 或 组件数据更新完成之后 执行');
+    })
+    return (
+        <div>
+            {count}
+            <button onClick={() => setCount(count + 1)}>+1</button>
+        </div>
+    )
+}
+```
+```jsx
+useEffect(() => {
+    console.log('仅当做componentDidMount');
+},[])
+```
+```jsx
+function App() {
+    function onScroll() {
+        console.log('监听到页面发生滚动了');
+    }
+    useEffect(() => {
+        window.addEventListener('scroll',onScroll);
+        return () => {
+            // 卸载组件时解除对事件的绑定
+            window.removeEventListener('scroll',onScroll);
+        }
+    })
+    return (
+        <div>
+            App 
+        </div>
+    )
+}
+
+```
+
+```jsx
+function App() {
+    
+    const [count,setCount] = useState(0);
+    useEffect(() => {
+        const timeId = setInterval(() => {
+           setCount(count => count + 1); 
+        },1000)
+        return () => {
+            clearInterval(timeId);
+        }
+    },[])
+    return (
+        <div>
+            <h1>当前求和为：{count}</h1> 
+        </div>
+    )
+}
+
+```
+```jsx
+useEffect(() => {
+    document.title = count;
+}, [count])
+
+
+//在useEffect中直接使用async和await是会报错的，推荐使用立即执行函数来包裹异步函数。
+function getData() {
+    return new Promise(resolve => {
+        resolve({msg: 'Hello'})
+    })
+}
+function App() {
+
+    useEffect(() => {
+        (async function () {
+            const result = await getData();
+            console.log(result);
+        })()
+    },[])
+    
+    return (
+        <div>
+            App
+        </div>
+    )
+}
+
+```
