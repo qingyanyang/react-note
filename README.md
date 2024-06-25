@@ -324,6 +324,22 @@ const handleClick= (name)=>{
   )
 }
 ```
+# use javascript to understand child pass info to parent
+```js
+function parentFunction() {
+   function receiveDataFromChild(data) {
+    console.log("Data received from child:", data);
+}
+
+    // call child func
+    childFunction(receiveDataFromChild);
+}
+
+function childFunction(sendDataToParent) {
+    const data = "Hello from Child";
+    sendDataToParent(data);
+}
+```
  # hooks
 
  # useState
@@ -775,3 +791,4 @@ function App() {
 }
 
 ```
+
